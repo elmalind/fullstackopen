@@ -36,13 +36,17 @@ const app = http.createServer((request, response) => {
       <p>Phonebook has info for ${persons.length} people</p>
       <p>${new Date()}</p>
     `);
-  } else if (request.url.startsWith("/api/persons/")) {
-    const id = request.url.split("/")[3]; // ottaa id:n urlista
+  } else if (
+    request.url.startsWith("/api/persons/") &&
+    request.method === "DELETE"
+  ) {
+    const id = request.url.split("/")[3];
     const person = persons.find((p) => p.id === id);
 
     if (person) {
-      response.writeHead(200, { "Content-Type": "application/json" });
-      response.end(JSON.stringify(person));
+      persons.splice(persons.indexOf(person), 1);
+      response.writeHead(204); // 204 = No Content (poistettu onnistuneesti)
+      response.end();
     } else {
       response.writeHead(404);
       response.end(JSON.stringify({ error: "not found" }));
