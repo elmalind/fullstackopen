@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Forms from "./components/Forms";
 import Lists from "./components/Lists";
-import People from "./components/People";
+import phonebook from "./services/phonebook";
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNumber] = useState("");
+
+  useEffect(() => {
+    phonebook.getAll().then((response) => {
+      setPersons(response.data);
+    });
+  }, []);
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -17,9 +23,13 @@ const App = () => {
       return;
     }
 
-    setPersons(persons.concat({ name: newName, number: newNumber }));
-    setNewName("");
-    setNumber("");
+    const newPerson = { name: newName, number: newNumber };
+
+    phonebook.create(newPerson).then((response) => {
+      setPersons(persons.concat(response.data));
+      setNewName("");
+      setNumber("");
+    });
   };
 
   return (
