@@ -27,7 +27,7 @@ const persons = [
 ];
 
 const app = http.createServer((request, response) => {
-  if (request.url === "/api/persons") {
+  if (request.url === "/api/persons" && request.method === "GET") {
     response.writeHead(200, { "Content-Type": "application/json" });
     response.end(JSON.stringify(persons));
   } else if (request.url === "/info") {
@@ -51,6 +51,35 @@ const app = http.createServer((request, response) => {
       response.writeHead(404);
       response.end(JSON.stringify({ error: "not found" }));
     }
+  } else if (
+    request.url.startsWith("/api/persons/") &&
+    request.method === "GET"
+  ) {
+    const id = request.url.split("/")[3];
+    const person = persons.find((p) => p.id === id);
+
+    if (person) {
+      response.writeHead(200, { "Content-Type": "application/json" });
+      response.end(JSON.stringify(person));
+    } else {
+      response.writeHead(404);
+      response.end(JSON.stringify({ error: "not found" }));
+    }
+  } else if (request.url === "/api/persons" && request.method === "POST") {
+    let body = "";
+
+    request.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+
+    request.on("end", () => {
+      const newPerson = JSON.parse(body);
+      newPerson.id = String(Math.floor(Math.random() * 1000000));
+      persons.push(newPerson);
+
+      response.writeHead(201, { "Content-Type": "application/json" });
+      response.end(JSON.stringify(newPerson));
+    });
   }
 });
 
