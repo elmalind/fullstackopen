@@ -32,6 +32,12 @@ const App = () => {
     });
   };
 
+  const deletePerson = (id) => {
+    phonebook.remove(id).then(() => {
+      setPersons(persons.filter((person) => person.id !== id));
+    });
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -43,7 +49,7 @@ const App = () => {
         onSubmit={addPerson}
       />
       <h2>Numbers</h2>
-      <Lists persons={persons} />
+      <Lists persons={persons} onDelete={deletePerson} />
     </div>
   );
 };
