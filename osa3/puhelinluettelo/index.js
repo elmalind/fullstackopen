@@ -26,9 +26,17 @@ const persons = [
   },
 ];
 
-const app = http.createServer((_request, response) => {
-  response.writeHead(200, { "Content-Type": "application/json" });
-  response.end(JSON.stringify(persons));
+const app = http.createServer((request, response) => {
+  if (request.url === "/api/persons") {
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify(persons));
+  } else if (request.url === "/info") {
+    response.writeHead(200, { "Content-Type": "text/html" });
+    response.end(`
+      <p>Phonebook has info for ${persons.length} people</p>
+      <p>${new Date()}</p>
+    `);
+  }
 });
 
 const PORT = 3001;
