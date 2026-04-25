@@ -20,21 +20,21 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault();
 
-    const exists = persons.some((person) => person.name === newName);
-    if (exists) {
-      alert(`${newName} is already added to phonebook`);
-      return;
-    }
-
     const newPerson = { name: newName, number: newNumber };
 
-    phonebook.create(newPerson).then((response) => {
-      setPersons(persons.concat(response.data));
-      setNewName("");
-      setNumber("");
-      setErrorMessage(`Added ${newName}`);
-      setTimeout(() => setErrorMessage(null), 3000);
-    });
+    phonebook
+      .create(newPerson)
+      .then((response) => {
+        setPersons(persons.concat(response.data));
+        setNewName("");
+        setNumber("");
+        setErrorMessage(`Added ${newName}`);
+        setTimeout(() => setErrorMessage(null), 3000);
+      })
+      .catch((error) => {
+        setErrorMessage(error.response.data.error);
+        setTimeout(() => setErrorMessage(null), 3000);
+      });
   };
 
   const deletePerson = (id) => {

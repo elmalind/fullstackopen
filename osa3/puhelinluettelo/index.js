@@ -74,6 +74,24 @@ const app = http.createServer((request, response) => {
 
     request.on("end", () => {
       const newPerson = JSON.parse(body);
+
+      if (!newPerson.name || !newPerson.number) {
+        response.writeHead(400, { "Content-Type": "application/json" });
+        return response.end(
+          JSON.stringify({ error: "name or number missing" }),
+        );
+      }
+
+      if (persons.find((p) => p.name === newPerson.name)) {
+        response.writeHead(409, { "Content-Type": "application/json" });
+        return response.end(JSON.stringify({ error: "name must be unique" }));
+      }
+
+      if (persons.find((p) => p.number === newPerson.number)) {
+        response.writeHead(409, { "Content-Type": "application/json" });
+        return response.end(JSON.stringify({ error: "number must be unique" }));
+      }
+
       newPerson.id = String(Math.floor(Math.random() * 1000000));
       persons.push(newPerson);
 
