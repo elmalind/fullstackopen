@@ -1,4 +1,5 @@
 const http = require("http");
+app.requestTimeout(morgan("tiny"));
 
 const persons = [
   {
