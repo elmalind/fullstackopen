@@ -1,12 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const cors = require("cors");
 const Person = require("./models/person");
 
-const password = process.argv[2];
+const password = process.env.MONGODB_PASSWORD || process.argv[2];
 
 if (!password) {
-  console.error("Password is required as command line argument");
+  console.error("Password is required as environment variable MONGODB_PASSWORD or command line argument");
   process.exit(1);
 }
 
@@ -26,6 +27,7 @@ mongoose
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 app.use(morgan("tiny"));
 app.use(express.static("dist"));
 
