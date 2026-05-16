@@ -110,6 +110,10 @@ app.post("/api/persons", (req, res, next) => {
 const errorHandler = (error, req, res, next) => {
   console.error(error.message);
 
+  if (res.headersSent) {
+    return next(error);
+  }
+
   if (error.name === "CastError") {
     return res.status(400).json({ error: "malformatted id" });
   }
