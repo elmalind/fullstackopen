@@ -38,9 +38,9 @@ const App = () => {
   };
 
   const deletePerson = (id) => {
+    const person = persons.find((p) => p.id === id);
     phonebook.remove(id).then(() => {
-      S;
-      setPersons(persons.filter((person) => person.id !== id));
+      setPersons(persons.filter((p) => p.id !== id));
       setErrorMessage(`Deleted ${person.name}`);
       setTimeout(() => setErrorMessage(null), 3000);
     });

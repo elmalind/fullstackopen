@@ -7,7 +7,9 @@ const Person = require("./models/person");
 const password = process.env.MONGODB_PASSWORD || process.argv[2];
 
 if (!password) {
-  console.error("Password is required as environment variable MONGODB_PASSWORD or command line argument");
+  console.error(
+    "Password is required as environment variable MONGODB_PASSWORD or command line argument",
+  );
   process.exit(1);
 }
 
@@ -26,70 +28,104 @@ mongoose
 
 const app = express();
 
+const createError = (message, statusCode) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+};
+
 app.use(express.json());
 app.use(cors());
 app.use(morgan("tiny"));
 app.use(express.static("dist"));
 
-app.get("/api/persons", (req, res) => {
-  Person.find({}).then((persons) => {
-    res.json(persons);
-  });
+app.get("/api/persons", (req, res, next) => {
+  Person.find({})
+    .then((persons) => {
+      res.json(persons);
+    })
+    .catch(next);
 });
 
-app.get("/info", (req, res) => {
-  Person.find({}).then((persons) => {
-    res.send(`
+app.get("/info", (req, res, next) => {
+  Person.find({})
+    .then((persons) => {
+      res.send(`
       <p>Phonebook has info for ${persons.length} people</p>
       <p>${new Date()}</p>
     `);
-  });
+    })
+    .catch(next);
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id)
     .then((person) => {
       if (person) {
         res.json(person);
       } else {
-        res.status(404).json({ error: "not found" });
+        next(createError("not found", 404));
       }
     })
-    .catch(() => res.status(400).json({ error: "malformatted id" }));
+    .catch(next);
 });
 
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   Person.findByIdAndDelete(req.params.id)
     .then(() => {
       res.status(204).end();
     })
-    .catch(() => res.status(400).json({ error: "malformatted id" }));
+    .catch(next);
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const { name, number } = req.body;
 
   if (!name || !number) {
-    return res.status(400).json({ error: "name or number missing" });
+    return next(createError("name or number missing", 400));
   }
 
-  Person.findOne({ name }).then((existing) => {
-    if (existing) {
-      return res.status(409).json({ error: "name must be unique" });
-    }
+  Person.findOne({ name })
+    .then((existing) => {
+      if (existing) {
+        throw createError("name must be unique", 409);
+      }
 
-    Person.findOne({ number }).then((existingNum) => {
+      return Person.findOne({ number });
+    })
+    .then((existingNum) => {
       if (existingNum) {
-        return res.status(409).json({ error: "number must be unique" });
+        throw createError("number must be unique", 409);
       }
 
       const person = new Person({ name, number });
-      person.save().then((saved) => {
-        res.status(201).json(saved);
-      });
-    });
-  });
+      return person.save();
+    })
+    .then((saved) => {
+      res.status(201).json(saved);
+    })
+    .catch(next);
 });
+
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return res.status(400).json({ error: "malformatted id" });
+  }
+
+  if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message });
+  }
+
+  if (error.statusCode) {
+    return res.status(error.statusCode).json({ error: error.message });
+  }
+
+  res.status(500).json({ error: "internal server error" });
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
