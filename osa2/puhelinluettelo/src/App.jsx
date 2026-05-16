@@ -32,7 +32,9 @@ const App = () => {
         setTimeout(() => setErrorMessage(null), 3000);
       })
       .catch((error) => {
-        setErrorMessage(error.response.data.error);
+        setErrorMessage(
+          error.response?.data?.error || "Name is too short (<3)",
+        );
         setTimeout(() => setErrorMessage(null), 3000);
       });
   };
