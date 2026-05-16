@@ -1,6 +1,27 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const morgan = require("morgan");
 const Person = require("./models/person");
+
+const password = process.argv[2];
+
+if (!password) {
+  console.error("Password is required as command line argument");
+  process.exit(1);
+}
+
+const url = `mongodb+srv://fullstack:${password}@cluster0.ez6nqcg.mongodb.net/phonebook?retryWrites=true&w=majority`;
+
+mongoose.set("strictQuery", false);
+mongoose
+  .connect(url, { family: 4 })
+  .then(() => {
+    console.log("connected to MongoDB");
+  })
+  .catch((err) => {
+    console.error("error connecting to MongoDB:", err.message);
+    process.exit(1);
+  });
 
 const app = express();
 
