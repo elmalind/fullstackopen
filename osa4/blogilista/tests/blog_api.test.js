@@ -36,10 +36,10 @@ beforeEach(async () => {
   await Blog.deleteMany({});
   await User.deleteMany({});
 
-  const passwordHash = await bcrypt.hash("sekret", 10);
+  const passwordHash = await bcrypt.hash("emma", 10);
   const user = new User({
-    username: "root",
-    name: "Superuser",
+    username: "emma",
+    name: "emma",
     passwordHash,
   });
   await user.save();
@@ -50,7 +50,7 @@ beforeEach(async () => {
 const getToken = async () => {
   const response = await api
     .post("/api/login")
-    .send({ username: "root", password: "sekret" });
+    .send({ username: "emma", password: "emma" });
 
   return response.body.token;
 };
@@ -128,7 +128,7 @@ describe("blogs API", { concurrency: false }, () => {
       .send(newBlog)
       .expect(201);
 
-    const user = await User.findOne({ username: "root" });
+    const user = await User.findOne({ username: "emma" });
     assert.strictEqual(response.body.user, String(user._id));
   });
 
@@ -141,13 +141,18 @@ describe("blogs API", { concurrency: false }, () => {
       likes: 6,
     };
 
-    await api.post("/api/blogs").set("Authorization", `Bearer ${token}`).send(newBlog);
+    await api
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
+      .send(newBlog);
 
     const response = await api.get("/api/blogs");
-    const addedBlog = response.body.find((blog) => blog.title === newBlog.title);
+    const addedBlog = response.body.find(
+      (blog) => blog.title === newBlog.title,
+    );
 
-    assert.strictEqual(addedBlog.user.username, "root");
-    assert.strictEqual(addedBlog.user.name, "Superuser");
+    assert.strictEqual(addedBlog.user.username, "emma");
+    assert.strictEqual(addedBlog.user.name, "emma");
   });
 
   test("a blog can be deleted", async () => {

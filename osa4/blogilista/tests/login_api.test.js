@@ -19,10 +19,10 @@ before(async () => {
 beforeEach(async () => {
   await User.deleteMany({});
 
-  const passwordHash = await bcrypt.hash("sekret", 10);
+  const passwordHash = await bcrypt.hash("emma", 10);
   const user = new User({
-    username: "root",
-    name: "Superuser",
+    username: "emma",
+    name: "emma",
     passwordHash,
   });
 
@@ -33,19 +33,19 @@ describe("login API", { concurrency: false }, () => {
   test("login succeeds with valid credentials", async () => {
     const response = await api
       .post("/api/login")
-      .send({ username: "root", password: "sekret" })
+      .send({ username: "emma", password: "emma" })
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
     assert(response.body.token);
-    assert.strictEqual(response.body.username, "root");
-    assert.strictEqual(response.body.name, "Superuser");
+    assert.strictEqual(response.body.username, "emma");
+    assert.strictEqual(response.body.name, "emma");
   });
 
   test("login fails with invalid password", async () => {
     await api
       .post("/api/login")
-      .send({ username: "root", password: "wrong-password" })
+      .send({ username: "emma", password: "wrong-password" })
       .expect(401);
   });
 });

@@ -27,9 +27,9 @@ describe("users API", { concurrency: false }, () => {
     const usersAtStart = await User.find({});
 
     const newUser = {
-      username: "root",
-      name: "Superuser",
-      password: "sekret",
+      username: "emma",
+      name: "emma",
+      password: "emma",
     };
 
     await api
