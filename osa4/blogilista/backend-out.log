@@ -1,0 +1,6 @@
+
+> blogilista@1.0.0 dev
+> node --watch index.js
+
+Server running on port 3003
+connected to MongoDB
