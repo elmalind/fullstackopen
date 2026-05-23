@@ -39,7 +39,7 @@ beforeEach(async () => {
   const passwordHash = await bcrypt.hash("emma", 10);
   const user = new User({
     username: "emma",
-    name: "emma",
+    name: "Emma",
     passwordHash,
   });
   await user.save();
@@ -128,7 +128,7 @@ describe("blogs API", { concurrency: false }, () => {
       .send(newBlog)
       .expect(201);
 
-    const user = await User.findOne({ username: "emma" });
+    const user = await User.findOne({ username: "root" });
     assert.strictEqual(response.body.user, String(user._id));
   });
 
@@ -152,7 +152,7 @@ describe("blogs API", { concurrency: false }, () => {
     );
 
     assert.strictEqual(addedBlog.user.username, "emma");
-    assert.strictEqual(addedBlog.user.name, "emma");
+    assert.strictEqual(addedBlog.user.name, "Superuser");
   });
 
   test("a blog can be deleted", async () => {
