@@ -76,12 +76,31 @@ const App = () => {
   const addBlog = async (blogObject) => {
     const returnedBlog = await blogService.create(blogObject);
 
-    setBlogs(blogs.concat(returnedBlog));
+    setBlogs(
+      blogs.concat({
+        ...returnedBlog,
+        user: {
+          id: user.id || returnedBlog.user,
+          username: user.username,
+          name: user.name,
+        },
+      }),
+    );
     showNotification(
       `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
       "success",
     );
     blogFormRef.current.hide();
+  };
+
+  const removeBlog = async (blog) => {
+    try {
+      await blogService.remove(blog.id);
+      setBlogs((blogs) => blogs.filter((listedBlog) => listedBlog.id !== blog.id));
+      showNotification(`removed blog ${blog.title} by ${blog.author}`, "success");
+    } catch {
+      showNotification(`removing blog ${blog.title} failed`, "error");
+    }
   };
 
   if (user === null) {
@@ -131,7 +150,13 @@ const App = () => {
       {blogs
         .sort((a, b) => (b.likes || 0) - (a.likes || 0))
         .map((blog) => (
-          <Blog key={blog.id} blog={blog} onUpdate={updateBlog} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            user={user}
+            onUpdate={updateBlog}
+            onRemove={removeBlog}
+          />
         ))}
     </div>
   );
