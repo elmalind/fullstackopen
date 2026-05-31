@@ -128,9 +128,11 @@ const App = () => {
           onCancel={() => blogFormRef.current.hide()}
         />
       </Togglable>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} onUpdate={updateBlog} />
-      ))}
+      {blogs
+        .sort((a, b) => (b.likes || 0) - (a.likes || 0))
+        .map((blog) => (
+          <Blog key={blog.id} blog={blog} onUpdate={updateBlog} />
+        ))}
     </div>
   );
 };
