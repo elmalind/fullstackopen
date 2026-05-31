@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import BlogForm from "./components/BlogForm";
@@ -63,6 +63,8 @@ const App = () => {
     setUser(null);
   };
 
+  const blogFormRef = useRef();
+
   const addBlog = async (blogObject) => {
     const returnedBlog = await blogService.create(blogObject);
 
@@ -71,6 +73,7 @@ const App = () => {
       `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
       "success",
     );
+    blogFormRef.current.hide();
   };
 
   if (user === null) {
@@ -111,8 +114,11 @@ const App = () => {
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </p>
-      <Togglable buttonLabel="create new blog">
-        {({ hideForm }) => <BlogForm onAddBlog={addBlog} hideForm={hideForm} />}
+      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+        <BlogForm
+          onAddBlog={addBlog}
+          onCancel={() => blogFormRef.current.hide()}
+        />
       </Togglable>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />

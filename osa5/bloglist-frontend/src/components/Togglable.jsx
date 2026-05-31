@@ -1,26 +1,24 @@
-import { useState } from "react";
+import { useState, forwardRef, useImperativeHandle } from "react";
 
-const Togglable = ({ buttonLabel, children }) => {
+const Togglable = forwardRef(({ buttonLabel, children }, ref) => {
   const [visible, setVisible] = useState(false);
 
   const toggleVisibility = () => {
     setVisible(!visible);
   };
 
-  const hideForm = () => {
-    setVisible(false);
-  };
+  useImperativeHandle(ref, () => ({
+    hide: () => setVisible(false),
+  }));
 
   return (
     <div>
       <button onClick={toggleVisibility}>{buttonLabel}</button>
-      {visible && (
-        <div>
-          {typeof children === "function" ? children({ hideForm }) : children}
-        </div>
-      )}
+      {visible && <div>{children}</div>}
     </div>
   );
-};
+});
+
+Togglable.displayName = "Togglable";
 
 export default Togglable;
