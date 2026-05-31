@@ -18,8 +18,8 @@ const Blog = ({ blog, onUpdate }) => {
 
   const handleLike = async () => {
     const updatedBlog = {
-      user: blog.user._id,
-      likes: blog.likes + 1,
+      user: typeof blog.user === "string" ? blog.user : blog.user._id,
+      likes: (blog.likes || 0) + 1,
       author: blog.author,
       title: blog.title,
       url: blog.url,
@@ -39,10 +39,15 @@ const Blog = ({ blog, onUpdate }) => {
         <div>
           <div>url: {blog.url}</div>
           <div>
-            likes: {blog.likes}
+            likes: {blog.likes || 0}
             <button onClick={handleLike}>like</button>
           </div>
-          <div>user: {blog.user?.name || "Unknown"}</div>
+          <div>
+            user:{" "}
+            {typeof blog.user === "string"
+              ? blog.user
+              : blog.user?.name || "Unknown"}
+          </div>
         </div>
       )}
     </div>
