@@ -52,7 +52,7 @@ const App = () => {
       setUsername("");
       setPassword("");
       showNotification(`Welcome ${user.name}!`, "success");
-    } catch (error) {
+    } catch {
       showNotification("wrong username/password", "error");
     }
   };
@@ -64,7 +64,7 @@ const App = () => {
   };
 
   const updateBlog = (updatedBlog) => {
-    setBlogs(
+    setBlogs((blogs) =>
       blogs.map((blog) =>
         blog.id === updatedBlog.id ? { ...updatedBlog, user: blog.user } : blog,
       ),
