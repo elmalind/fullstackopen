@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
-  Link,
   Navigate,
   Route,
   Routes,
@@ -9,37 +8,21 @@ import {
 } from "react-router-dom";
 import Blog from "./components/Blog";
 import BlogView from "./components/BlogView";
+import Navigation from "./components/Navigation";
 import Notification from "./components/Notification";
 import BlogForm from "./components/BlogForm";
+import {
+  Button,
+  ButtonRow,
+  Field,
+  FormPanel,
+  FormTitle,
+  Input,
+  Label,
+  StyledForm,
+} from "./components/FormStyles";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-
-const Navigation = ({ user, onLogout }) => {
-  const padding = {
-    paddingRight: 5,
-  };
-
-  return (
-    <div>
-      <Link style={padding} to="/">
-        blogs
-      </Link>
-      {user === null ? (
-        <Link style={padding} to="/login">
-          login
-        </Link>
-      ) : (
-        <>
-          <Link style={padding} to="/create">
-            create new blog
-          </Link>
-          {user.name} logged in
-          <button onClick={onLogout}>logout</button>
-        </>
-      )}
-    </div>
-  );
-};
 
 const LoginForm = ({
   username,
@@ -48,30 +31,34 @@ const LoginForm = ({
   onPasswordChange,
   onLogin,
 }) => (
-  <div>
-    <h2>Log in to application</h2>
-    <form onSubmit={onLogin}>
-      <div>
-        username
-        <input
+  <FormPanel>
+    <FormTitle>Log in to application</FormTitle>
+    <StyledForm onSubmit={onLogin}>
+      <Field>
+        <Label htmlFor="login-username">username</Label>
+        <Input
+          id="login-username"
           type="text"
           value={username}
           name="Username"
           onChange={onUsernameChange}
         />
-      </div>
-      <div>
-        password
-        <input
+      </Field>
+      <Field>
+        <Label htmlFor="login-password">password</Label>
+        <Input
+          id="login-password"
           type="password"
           value={password}
           name="Password"
           onChange={onPasswordChange}
         />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  </div>
+      </Field>
+      <ButtonRow>
+        <Button type="submit">login</Button>
+      </ButtonRow>
+    </StyledForm>
+  </FormPanel>
 );
 
 const BlogList = ({ blogs }) => (
@@ -91,10 +78,10 @@ const CreateBlogView = ({ user, onAddBlog }) => {
   }
 
   return (
-    <div>
-      <h2>create new blog</h2>
+    <FormPanel>
+      <FormTitle>create new blog</FormTitle>
       <BlogForm onAddBlog={onAddBlog} onCancel={() => navigate("/")} />
-    </div>
+    </FormPanel>
   );
 };
 

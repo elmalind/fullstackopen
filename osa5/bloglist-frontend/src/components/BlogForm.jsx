@@ -1,4 +1,12 @@
 import { useState } from "react";
+import {
+  Button,
+  ButtonRow,
+  Field,
+  Input,
+  Label,
+  StyledForm,
+} from "./FormStyles";
 
 const BlogForm = ({ onAddBlog, onCancel }) => {
   const [title, setTitle] = useState("");
@@ -22,42 +30,44 @@ const BlogForm = ({ onAddBlog, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="blog-title">title</label>
-        <input
+    <StyledForm onSubmit={handleSubmit}>
+      <Field>
+        <Label htmlFor="blog-title">title</Label>
+        <Input
           id="blog-title"
           type="text"
           value={title}
           name="Title"
           onChange={({ target }) => setTitle(target.value)}
         />
-      </div>
-      <div>
-        <label htmlFor="blog-author">author</label>
-        <input
+      </Field>
+      <Field>
+        <Label htmlFor="blog-author">author</Label>
+        <Input
           id="blog-author"
           type="text"
           value={author}
           name="Author"
           onChange={({ target }) => setAuthor(target.value)}
         />
-      </div>
-      <div>
-        <label htmlFor="blog-url">url</label>
-        <input
+      </Field>
+      <Field>
+        <Label htmlFor="blog-url">url</Label>
+        <Input
           id="blog-url"
           type="text"
           value={url}
           name="Url"
           onChange={({ target }) => setUrl(target.value)}
         />
-      </div>
-      <button type="submit">create</button>
-      <button type="button" onClick={onCancel}>
-        cancel
-      </button>
-    </form>
+      </Field>
+      <ButtonRow>
+        <Button type="submit">create</Button>
+        <Button type="button" $variant="secondary" onClick={onCancel}>
+          cancel
+        </Button>
+      </ButtonRow>
+    </StyledForm>
   );
 };
 
