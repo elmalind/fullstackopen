@@ -1,10 +1,21 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import "@testing-library/jest-dom";
+import blogService from "../services/blogs";
 import Blog from "./Blog";
 
+vi.mock("../services/blogs", () => ({
+  default: {
+    update: vi.fn(),
+  },
+}));
+
 describe("Blog component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders title and author by default", () => {
     const blog = {
       id: "1",
@@ -116,5 +127,48 @@ describe("Blog component", () => {
 
     // Check that user name is now rendered
     expect(screen.getByText("added by John Doe")).toBeInTheDocument();
+  });
+
+  it("calls the event handler twice when like button is clicked twice", async () => {
+    const blog = {
+      id: "1",
+      title: "Test Blog Title",
+      author: "Test Author",
+      url: "https://example.com",
+      likes: 5,
+      user: {
+        id: "user1",
+        name: "John Doe",
+      },
+    };
+
+    const user = {
+      id: "user2",
+      name: "Current User",
+    };
+
+    blogService.update.mockResolvedValue(blog);
+
+    const mockOnUpdate = vi.fn();
+    const mockOnRemove = () => {};
+    render(
+      <Blog
+        blog={blog}
+        user={user}
+        onUpdate={mockOnUpdate}
+        onRemove={mockOnRemove}
+      />,
+    );
+
+    const testUser = userEvent.setup();
+    await testUser.click(screen.getByRole("button", { name: /view/ }));
+
+    const likeButton = screen.getByRole("button", { name: /like/ });
+    await testUser.click(likeButton);
+    await testUser.click(likeButton);
+
+    await waitFor(() => {
+      expect(mockOnUpdate).toHaveBeenCalledTimes(2);
+    });
   });
 });

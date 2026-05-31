@@ -24,8 +24,9 @@ const BlogForm = ({ onAddBlog, onCancel }) => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        title
+        <label htmlFor="blog-title">title</label>
         <input
+          id="blog-title"
           type="text"
           value={title}
           name="Title"
@@ -33,8 +34,9 @@ const BlogForm = ({ onAddBlog, onCancel }) => {
         />
       </div>
       <div>
-        author
+        <label htmlFor="blog-author">author</label>
         <input
+          id="blog-author"
           type="text"
           value={author}
           name="Author"
@@ -42,8 +44,9 @@ const BlogForm = ({ onAddBlog, onCancel }) => {
         />
       </div>
       <div>
-        url
+        <label htmlFor="blog-url">url</label>
         <input
+          id="blog-url"
           type="text"
           value={url}
           name="Url"
