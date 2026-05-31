@@ -36,6 +36,8 @@ const Blog = ({ blog, user, onUpdate, onRemove }) => {
   };
 
   const blogUserId = typeof blog.user === "string" ? blog.user : blog.user?.id;
+  const blogUserName =
+    typeof blog.user === "string" ? blog.user : blog.user?.name;
   const isOwner =
     (blogUserId && user.id && blogUserId === user.id) ||
     (typeof blog.user !== "string" && blog.user?.username === user.username);
@@ -53,6 +55,7 @@ const Blog = ({ blog, user, onUpdate, onRemove }) => {
             likes: {blog.likes || 0}
             <button onClick={handleLike}>like</button>
           </div>
+          {blogUserName && <div>added by {blogUserName}</div>}
           {isOwner && <button onClick={handleRemove}>delete</button>}
         </div>
       )}
