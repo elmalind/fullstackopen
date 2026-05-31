@@ -63,6 +63,14 @@ const App = () => {
     setUser(null);
   };
 
+  const updateBlog = (updatedBlog) => {
+    setBlogs(
+      blogs.map((blog) =>
+        blog.id === updatedBlog.id ? { ...updatedBlog, user: blog.user } : blog,
+      ),
+    );
+  };
+
   const blogFormRef = useRef();
 
   const addBlog = async (blogObject) => {
@@ -121,7 +129,7 @@ const App = () => {
         />
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} onUpdate={updateBlog} />
       ))}
     </div>
   );
